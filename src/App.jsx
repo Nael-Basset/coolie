@@ -10,6 +10,7 @@ import PodiumPage from './pages/PodiumPage';
 import PlanningPage from './pages/PlanningPage';
 import ProfilePage from './pages/ProfilePage';
 import FavoritesPage from './pages/FavoritesPage';
+import Cart from './components/Cart'; // Importer le composant Cart
 import { ToastProvider } from './contexts/ToastContext';
 import { CartProvider } from './contexts/CartContext';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -96,6 +97,9 @@ function App() {
                   <Route path="/favorites" element={<FavoritesPage />} />
                 </Routes>
               </div>
+              
+              {/* Ajout du composant Cart */}
+              <Cart />
               
               <footer className="nav-footer">
                 <BottomNavigation active={activePage} setActive={setActivePage} />

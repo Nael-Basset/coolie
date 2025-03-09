@@ -42,6 +42,7 @@ export const pickupLocations = [
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+  const [cartVisible, setCartVisible] = useState(false); // Ajout d'un état pour la visibilité du panier
   const [selectedPickupLocation, setSelectedPickupLocation] = useState(null);
   const { showToast } = useToast();
 
@@ -90,6 +91,9 @@ export const CartProvider = ({ children }) => {
         return [...prevCart, { ...item, quantity: item.quantity || 1 }];
       }
     });
+    
+    // Afficher automatiquement le panier lors de l'ajout d'un élément
+    setCartVisible(true);
     
     // Message plus court
     showToast(`${item.name} ajouté`, 'success');
@@ -180,6 +184,11 @@ export const CartProvider = ({ children }) => {
     ));
   };
 
+  // Fonctions pour contrôler la visibilité du panier
+  const showCart = () => setCartVisible(true);
+  const hideCart = () => setCartVisible(false);
+  const toggleCart = () => setCartVisible(prev => !prev);
+
   return (
     <CartContext.Provider value={{ 
       cart, 
@@ -192,7 +201,12 @@ export const CartProvider = ({ children }) => {
       selectedPickupLocation,
       selectPickupLocation,
       pickupLocations,
-      updateQuantity
+      updateQuantity,
+      // Exposer les contrôles de visibilité du panier
+      cartVisible,
+      showCart,
+      hideCart,
+      toggleCart
     }}>
       {children}
     </CartContext.Provider>
