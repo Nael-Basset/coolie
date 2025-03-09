@@ -213,9 +213,20 @@ export const CartProvider = ({ children }) => {
   };
 
   // Fonctions pour contrôler la visibilité du panier
-  const showCart = () => setCartVisible(true);
-  const hideCart = () => setCartVisible(false);
-  const toggleCart = () => setCartVisible(prev => !prev);
+  const showCart = () => {
+    console.log("showCart called, setting visibility to true");
+    setCartVisible(true);
+  };
+  
+  const hideCart = () => {
+    console.log("hideCart called, setting visibility to false");
+    setCartVisible(false);
+  };
+  
+  const toggleCart = () => {
+    console.log("toggleCart called, current visibility:", cartVisible);
+    setCartVisible(prev => !prev);
+  };
 
   return (
     <CartContext.Provider value={{ 

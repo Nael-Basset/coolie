@@ -1,31 +1,25 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { CartContext } from '../contexts/CartContext';
 import { FaTimes, FaPlus, FaMinus } from 'react-icons/fa';
 
 const Cart = () => {
   const { cart, removeFromCart, updateQuantity, calculateTotal, cartVisible, hideCart } = useContext(CartContext);
   
+  // Log pour le débogage
+  useEffect(() => {
+    console.log("Cart component rendered, visibility:", cartVisible);
+  }, [cartVisible]);
+  
   // Si le panier n'est pas visible, ne rien afficher
   if (!cartVisible) return null;
 
-  // Protection contre les erreurs
-  const handleClose = () => {
-    try {
-      hideCart();
-    } catch (error) {
-      console.error("Erreur lors de la fermeture du panier:", error);
-      // Essai de fermeture alternative
-      document.querySelector('.cart-overlay')?.remove();
-    }
-  };
-
   return (
-    <div className="cart-overlay fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-start">
-      <div className="cart-container bg-white w-full max-w-md mt-20 rounded-lg shadow-lg overflow-hidden">
+    <div className="cart-overlay fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-start pt-16">
+      <div className="cart-container bg-white w-full max-w-md rounded-lg shadow-lg overflow-hidden">
         <div className="cart-header flex justify-between items-center p-4 bg-green-primary text-white">
           <h3 className="text-xl font-semibold">Panier</h3>
           <button 
-            onClick={handleClose} 
+            onClick={hideCart} 
             className="text-white p-2 hover:bg-green-600 rounded-full"
             aria-label="Fermer"
           >
@@ -33,7 +27,7 @@ const Cart = () => {
           </button>
         </div>
         
-        <div className="cart-items p-4 max-h-[60vh] overflow-y-auto">
+        <div className="cart-items p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
           {!cart || cart.length === 0 ? (
             <p className="text-center text-gray-500 py-6">Votre panier est vide</p>
           ) : (
@@ -80,22 +74,11 @@ const Cart = () => {
           <div className="cart-footer p-4 bg-gray-50">
             <div className="flex justify-between items-center mb-4">
               <span className="font-semibold">Total:</span>
-              <span className="font-bold text-xl">
-                {(() => {
-                  try {
-                    return `${calculateTotal()} €`;
-                  } catch (error) {
-                    console.error("Erreur calcul total:", error);
-                    return "Calcul impossible";
-                  }
-                })()}
-              </span>
+              <span className="font-bold text-xl">{calculateTotal()} €</span>
             </div>
             <button 
               className="w-full py-3 bg-green-primary text-white rounded-md font-medium"
-              onClick={() => {
-                handleClose();
-              }}
+              onClick={hideCart}
             >
               Passer au paiement
             </button>

@@ -11,6 +11,7 @@ import PlanningPage from './pages/PlanningPage';
 import ProfilePage from './pages/ProfilePage';
 import FavoritesPage from './pages/FavoritesPage';
 import Cart from './components/Cart'; // Importer le composant Cart
+import CartIcon from './components/CartIcon'; // Importer CartIcon
 import { ToastProvider } from './contexts/ToastContext';
 import { CartProvider } from './contexts/CartContext';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -85,7 +86,16 @@ function App() {
         <ToastProvider>
           <CartProvider>
             <FavoritesProvider>
-              <div className="main-scroll-container swipeable-element">
+              {/* Ajout d'un header avec CartIcon */}
+              <header className="fixed top-0 left-0 right-0 bg-white z-10 shadow-sm">
+                <div className="container mx-auto px-4 py-2 flex justify-between items-center">
+                  <h1 className="text-lg font-bold text-green-primary">COOLIE</h1>
+                  <CartIcon />
+                </div>
+              </header>
+              
+              {/* Ajout de marge en haut pour le contenu principal */}
+              <div className="main-scroll-container swipeable-element pt-12">
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/recipes" element={<RecipesPage />} />
@@ -98,7 +108,7 @@ function App() {
                 </Routes>
               </div>
               
-              {/* Ajout du composant Cart */}
+              {/* Le panier */}
               <Cart />
               
               <footer className="nav-footer">
