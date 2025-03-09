@@ -8,38 +8,56 @@ const Cart = () => {
   // Si le panier n'est pas visible, ne rien afficher
   if (!cartVisible) return null;
 
+  // Protection contre les erreurs
+  const handleClose = () => {
+    try {
+      hideCart();
+    } catch (error) {
+      console.error("Erreur lors de la fermeture du panier:", error);
+      // Essai de fermeture alternative
+      document.querySelector('.cart-overlay')?.remove();
+    }
+  };
+
   return (
     <div className="cart-overlay fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-start">
-      <div className="cart-container bg-white w-full max-w-md mt-20 rounded-t-lg shadow-lg overflow-hidden">
+      <div className="cart-container bg-white w-full max-w-md mt-20 rounded-lg shadow-lg overflow-hidden">
         <div className="cart-header flex justify-between items-center p-4 bg-green-primary text-white">
           <h3 className="text-xl font-semibold">Panier</h3>
-          <button onClick={hideCart} className="text-white" aria-label="Fermer">
+          <button 
+            onClick={handleClose} 
+            className="text-white p-2 hover:bg-green-600 rounded-full"
+            aria-label="Fermer"
+          >
             <FaTimes />
           </button>
         </div>
         
         <div className="cart-items p-4 max-h-[60vh] overflow-y-auto">
-          {cart.length === 0 ? (
+          {!cart || cart.length === 0 ? (
             <p className="text-center text-gray-500 py-6">Votre panier est vide</p>
           ) : (
             cart.map(item => (
-              <div key={item.id} className="cart-item flex justify-between items-center py-3 border-b">
-                <div className="flex-1">
-                  <h4 className="text-sm font-medium">{item.name}</h4>
-                  <p className="text-sm text-gray-600">{typeof item.price === 'string' ? item.price : `${item.price.toFixed(2)} €`}</p>
+              <div key={item.id || `item-${Math.random()}`} className="cart-item flex justify-between items-center py-3 border-b">
+                <div className="flex-1 pr-2">
+                  <h4 className="text-sm font-medium">{item.name || "Produit sans nom"}</h4>
+                  <p className="text-sm text-gray-600">
+                    {typeof item.price === 'string' ? item.price : 
+                     (item.price ? `${parseFloat(item.price).toFixed(2)} €` : "Prix non disponible")}
+                  </p>
                 </div>
                 
                 <div className="flex items-center">
                   <button 
-                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    onClick={() => updateQuantity(item.id, Math.max(0, (item.quantity || 1) - 1))}
                     className="px-2 py-1 bg-gray-200 rounded-l"
                     aria-label="Diminuer quantité"
                   >
                     <FaMinus size={10} />
                   </button>
-                  <span className="px-3 py-1 bg-gray-100">{item.quantity}</span>
+                  <span className="px-3 py-1 bg-gray-100">{item.quantity || 1}</span>
                   <button 
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    onClick={() => updateQuantity(item.id, (item.quantity || 1) + 1)}
                     className="px-2 py-1 bg-gray-200 rounded-r"
                     aria-label="Augmenter quantité"
                   >
@@ -47,7 +65,7 @@ const Cart = () => {
                   </button>
                   <button 
                     onClick={() => removeFromCart(item.id)} 
-                    className="ml-3 text-red-500"
+                    className="ml-3 text-red-500 p-1"
                     aria-label="Supprimer"
                   >
                     <FaTimes />
@@ -58,17 +76,25 @@ const Cart = () => {
           )}
         </div>
         
-        {cart.length > 0 && (
+        {cart && cart.length > 0 && (
           <div className="cart-footer p-4 bg-gray-50">
             <div className="flex justify-between items-center mb-4">
               <span className="font-semibold">Total:</span>
-              <span className="font-bold text-xl">{calculateTotal()} €</span>
+              <span className="font-bold text-xl">
+                {(() => {
+                  try {
+                    return `${calculateTotal()} €`;
+                  } catch (error) {
+                    console.error("Erreur calcul total:", error);
+                    return "Calcul impossible";
+                  }
+                })()}
+              </span>
             </div>
             <button 
               className="w-full py-3 bg-green-primary text-white rounded-md font-medium"
               onClick={() => {
-                // Logique de paiement ou navigation
-                hideCart();
+                handleClose();
               }}
             >
               Passer au paiement

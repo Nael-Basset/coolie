@@ -1,6 +1,14 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useToast } from './ToastContext';
-import { products } from '../data/mockData';
+// Vérifier si le module mockData existe, sinon créer des produits fictifs
+let products = [];
+try {
+  const { products: mockProducts } = require('../data/mockData');
+  products = mockProducts || [];
+} catch (error) {
+  console.warn("Module mockData non trouvé, utilisation d'un tableau vide");
+  products = [];
+}
 
 export const CartContext = createContext();
 
@@ -42,25 +50,31 @@ export const pickupLocations = [
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
-  const [cartVisible, setCartVisible] = useState(false); // Ajout d'un état pour la visibilité du panier
+  const [cartVisible, setCartVisible] = useState(false);
   const [selectedPickupLocation, setSelectedPickupLocation] = useState(null);
-  const { showToast } = useToast();
+  const { showToast } = useToast ? useToast() : { showToast: () => {} };
 
   // Charger le panier depuis le stockage local au montage du composant
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
+    try {
+      const savedCart = localStorage.getItem('cart');
+      if (savedCart) {
         setCart(JSON.parse(savedCart));
-      } catch (error) {
-        console.error('Erreur lors du chargement du panier:', error);
       }
+    } catch (error) {
+      console.error('Erreur lors du chargement du panier:', error);
+      // Réinitialiser le panier en cas d'erreur
+      setCart([]);
     }
   }, []);
   
   // Sauvegarder le panier dans le stockage local à chaque modification
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
+    try {
+      localStorage.setItem('cart', JSON.stringify(cart));
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde du panier:', error);
+    }
   }, [cart]);
   
   // Ajouter un élément au panier
@@ -70,10 +84,16 @@ export const CartProvider = ({ children }) => {
       return;
     }
     
+    // Assurer que l'item a un ID
+    const itemWithId = {
+      ...item,
+      id: item.id || `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    };
+    
     setCart(prevCart => {
       // Vérifier si l'élément existe déjà
       const existingItemIndex = prevCart.findIndex(
-        cartItem => cartItem.id === item.id || cartItem.name === item.name
+        cartItem => cartItem.id === itemWithId.id || cartItem.name === itemWithId.name
       );
       
       // Si l'élément existe déjà, augmenter sa quantité
@@ -82,13 +102,13 @@ export const CartProvider = ({ children }) => {
         updatedCart[existingItemIndex] = {
           ...updatedCart[existingItemIndex],
           quantity: (parseFloat(updatedCart[existingItemIndex].quantity) || 0) + 
-                    (parseFloat(item.quantity) || 1)
+                    (parseFloat(itemWithId.quantity) || 1)
         };
         return updatedCart;
       } 
       // Sinon, ajouter le nouvel élément
       else {
-        return [...prevCart, { ...item, quantity: item.quantity || 1 }];
+        return [...prevCart, { ...itemWithId, quantity: itemWithId.quantity || 1 }];
       }
     });
     
@@ -96,84 +116,92 @@ export const CartProvider = ({ children }) => {
     setCartVisible(true);
     
     // Message plus court
-    showToast(`${item.name} ajouté`, 'success');
+    if (showToast) {
+      showToast(`${item.name} ajouté`, 'success');
+    }
   };
 
   const addIngredientsToCart = (ingredients) => {
-    // Transform ingredients into product-like objects
-    const ingredientProducts = ingredients.map((ingredient, index) => {
-      // Vérifier si l'ingrédient existe dans notre catalogue de produits
-      const existingProduct = products.find(p => 
-        p.name.toLowerCase().includes(ingredient.toLowerCase()) || 
-        ingredient.toLowerCase().includes(p.name.toLowerCase())
-      );
-      
-      return {
-        id: `ingredient-${Date.now()}-${index}`,
-        name: ingredient,
-        // Si l'ingrédient existe dans notre catalogue, utiliser son prix, sinon "Prix variable"
-        price: existingProduct ? existingProduct.price : "Prix variable",
-        quantity: 1,
-        isIngredient: true,
-        // Marquer si l'ingrédient est disponible ou non
-        isAvailable: !!existingProduct
-      };
-    });
+    if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
+      console.error("Liste d'ingrédients invalide", ingredients);
+      return;
+    }
     
-    // Add each ingredient to cart
+    // Simplifier la conversion d'ingrédients
+    const ingredientProducts = ingredients.map((ingredient, index) => ({
+      id: `ingredient-${Date.now()}-${index}`,
+      name: typeof ingredient === 'string' ? ingredient : (ingredient.name || 'Ingrédient'),
+      price: 0,
+      quantity: 1,
+      isIngredient: true
+    }));
+    
+    // Ajouter tous les ingrédients
     ingredientProducts.forEach(product => {
       addToCart(product);
     });
     
-    // Compte combien d'ingrédients ne sont pas disponibles
-    const unavailableCount = ingredientProducts.filter(p => !p.isAvailable).length;
-    
-    // Messages plus courts
-    if (unavailableCount > 0) {
-      showToast(`${ingredients.length} ingrédients ajoutés (${unavailableCount} indispo.)`, 'success');
-    } else {
+    if (showToast) {
       showToast(`${ingredients.length} ingrédients ajoutés`, 'success');
     }
   };
 
   const removeFromCart = (itemId) => {
+    if (!itemId) return;
+    
     setCart(prevCart => prevCart.filter(item => item.id !== itemId));
-    // Message plus court
-    showToast("Produit retiré", 'success');
+    
+    if (showToast) {
+      showToast("Produit retiré", 'success');
+    }
   };
 
   const clearCart = () => {
     setCart([]);
-    showToast("Panier vidé", 'success');
+    
+    if (showToast) {
+      showToast("Panier vidé", 'success');
+    }
   };
 
   const getCartCount = () => {
-    return cart.reduce((count, item) => count + item.quantity, 0);
+    if (!cart || !Array.isArray(cart)) return 0;
+    return cart.reduce((count, item) => count + (item.quantity || 1), 0);
   };
 
   const calculateTotal = () => {
-    return cart.reduce((total, item) => {
-      // Pour les prix avec format "1,50 € / Kg"
-      if (typeof item.price === 'string') {
-        // Extraire le montant numérique du prix
-        const priceMatch = item.price.replace(/,/g, '.').match(/\d+\.\d+|\d+/);
-        const numericPrice = priceMatch ? parseFloat(priceMatch[0]) : 0;
-        
-        // Si c'est un prix au kg et qu'on n'a pas de poids précisé, on suppose 1kg
-        return total + (numericPrice * item.quantity);
-      }
-      // Pour les prix numériques directs
-      return total + (item.price * item.quantity);
-    }, 0).toFixed(2);
+    if (!cart || !Array.isArray(cart)) return "0.00";
+    
+    try {
+      return cart.reduce((total, item) => {
+        // Pour les prix avec format "1,50 € / Kg"
+        if (typeof item.price === 'string') {
+          // Extraire le montant numérique du prix
+          const priceMatch = item.price.replace(/,/g, '.').match(/\d+\.\d+|\d+/);
+          const numericPrice = priceMatch ? parseFloat(priceMatch[0]) : 0;
+          
+          return total + (numericPrice * (item.quantity || 1));
+        }
+        // Pour les prix numériques directs
+        return total + ((item.price || 0) * (item.quantity || 1));
+      }, 0).toFixed(2);
+    } catch (error) {
+      console.error("Erreur dans le calcul du total", error);
+      return "0.00";
+    }
   };
   
   const selectPickupLocation = (location) => {
     setSelectedPickupLocation(location);
-    // Message plus court
-    showToast(`Point de retrait: ${location.name}`, 'success');
+    
+    if (showToast) {
+      showToast(`Point de retrait: ${location.name}`, 'success');
+    }
   };
 
   const updateQuantity = (itemId, newQuantity) => {
+    if (!itemId) return;
+    
     if (newQuantity <= 0) {
       removeFromCart(itemId);
       return;
@@ -202,7 +230,6 @@ export const CartProvider = ({ children }) => {
       selectPickupLocation,
       pickupLocations,
       updateQuantity,
-      // Exposer les contrôles de visibilité du panier
       cartVisible,
       showCart,
       hideCart,
