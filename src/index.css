@@ -1,0 +1,303 @@
+/* Importation des polices Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Quicksand:wght@500;700&family=Roboto:wght@400;500;700&display=swap');
+
+/* Directives Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Styles de base */
+@layer base {
+  body {
+    @apply bg-background text-text-dark min-h-screen font-body;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-header;
+  }
+}
+
+/* Composants personnalisés */
+@layer components {
+  /* Container racine pour mobile-first */
+  #root {
+    @apply max-w-md mx-auto min-h-screen flex flex-col;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Classes logo */
+  .logo {
+    @apply font-logo font-bold;
+  }
+
+  /* Styles des boutons */
+  .btn-primary {
+    @apply bg-green-primary text-white rounded-button py-2 px-4 shadow-button transition-colors;
+  }
+
+  .btn-secondary {
+    @apply bg-orange-secondary text-white rounded-button py-2 px-4 shadow-button transition-colors;
+  }
+
+  .btn-primary:hover {
+    @apply opacity-90;
+  }
+
+  .btn-secondary:hover {
+    @apply opacity-90;
+  }
+
+  /* Styles des cartes */
+  .card {
+    @apply bg-background-darker rounded-card shadow-card p-4;
+  }
+}
+
+/* Utilitaires personnalisés */
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Désactivation de la surbrillance bleue sur mobile */
+  .no-tap-highlight {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Corrections pour l'accessibilité mobile */
+input, button {
+  @apply focus:outline-none no-tap-highlight;
+}
+
+/* Meilleure gestion du scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Styles pour les cartes Leaflet */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 0.5rem;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  overflow: hidden;
+  padding: 0;
+}
+
+.leaflet-popup-content {
+  margin: 0.75rem;
+  min-width: 200px;
+}
+
+.custom-pin {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background: none !important;
+}
+
+/* Configuration des étiquettes de marqueurs */
+.marker-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.marker-label {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  white-space: nowrap;
+  margin-top: 2px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Animation de pulsation pour les marqueurs */
+.pulse-animation {
+  animation: pulse 2s infinite;
+  transform-origin: center center;
+}
+
+/* Animation spéciale pour les marqueurs de région */
+.region-pulse {
+  animation: regionPulse 3s infinite;
+  transform-origin: center center;
+}
+
+/* Animation spéciale pour les marqueurs de région */
+.region-marker {
+  transition: all 0.3s ease;
+  animation: regionPulse 3s infinite;
+}
+
+/* Style pour les marqueurs de type élément chimique */
+.periodic-element {
+  background: none !important;
+}
+
+.element-marker {
+  transition: all 0.3s ease;
+}
+
+/* Animation au survol des éléments chimiques */
+.element-hover {
+  transform: scale(1.15) !important;
+  filter: brightness(1.1);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5) !important;
+  z-index: 1001 !important;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1) rotate(45deg);
+    box-shadow: 0 0 0 0 rgba(85, 139, 47, 0.4);
+  }
+  70% {
+    transform: scale(1.05) rotate(45deg);
+    box-shadow: 0 0 0 10px rgba(85, 139, 47, 0);
+  }
+  100% {
+    transform: scale(1) rotate(45deg);
+    box-shadow: 0 0 0 0 rgba(85, 139, 47, 0);
+  }
+}
+
+@keyframes regionPulse {
+  0% {
+    transform: scale(1) rotate(45deg);
+    box-shadow: 0 0 0 0 rgba(85, 139, 47, 0.6);
+  }
+  50% {
+    transform: scale(1.08) rotate(45deg);
+    box-shadow: 0 0 0 15px rgba(85, 139, 47, 0);
+  }
+  100% {
+    transform: scale(1) rotate(45deg);
+    box-shadow: 0 0 0 0 rgba(85, 139, 47, 0);
+  }
+}
+
+/* Animation au survol des marqueurs */
+.marker-hover {
+  transform: scale(1.2) !important;
+  transition: transform 0.2s ease-in-out;
+  z-index: 1000 !important;
+}
+
+/* Animation au survol spécifique pour les régions */
+.region-hover {
+  transform: scale(1.15) !important;
+  z-index: 1001 !important;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Style personnalisé pour les popups */
+.custom-popup-container {
+  margin-bottom: 15px;
+}
+
+.custom-popup h3 {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #558B2F;
+}
+
+.custom-popup p {
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.custom-popup button {
+  background-color: #558B2F;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: none;
+  width: 100%;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.custom-popup button:hover {
+  background-color: #3e671f;
+}
+
+/* Styles pour la carte abstraite de France */
+.abstract-france-map-container {
+  cursor: pointer;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+.abstract-france-map-container:hover {
+  background-color: #e8e8e8;
+}
+
+.abstract-france-map {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+}
+
+.abstract-france-map-expanded svg {
+  width: 100%;
+  height: auto;
+  max-height: 50vh;
+}
+
+.france-outline {
+  fill: #E9EFF6;
+  stroke: #ADB5BD;
+  stroke-width: 0.5;
+}
+
+.region-polygon {
+  cursor: pointer;
+  stroke: white;
+  stroke-width: 1;
+  transition: all 0.2s ease;
+}
+
+.region-polygon:hover {
+  filter: brightness(1.1);
+  transform: scale(1.02);
+  transform-origin: center;
+  stroke-width: 1.5;
+}
+
+.region-label {
+  font-size: 6px;
+  fill: white;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.region-label-expanded {
+  font-size: 4px;
+  fill: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Classe de remplissage pour les régions */
+.fill-blue-500 { fill: #3b82f6; }
+.fill-green-500 { fill: #22c55e; }
+.fill-green-primary { fill: #558B2F; }
+.fill-yellow-500 { fill: #eab308; }
+.fill-red-500 { fill: #ef4444; }
+.fill-purple-500 { fill: #a855f7; }
+.fill-orange-secondary { fill: #FFB300; }
