@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { useSwipeable } from 'react-swipeable';
 import BottomNavigation from './components/BottomNavigation';
 import HomePage from './pages/HomePage';
 import RecipesPage from './pages/RecipesPage';
@@ -13,13 +14,24 @@ import { ToastProvider } from './contexts/ToastContext';
 import { CartProvider } from './contexts/CartContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { FavoritesProvider } from './contexts/FavoritesContext';
-import './App.css'; // Assurez-vous que le CSS est bien importé
+import './App.css';
+
+// Configuration pour les gestes de swipe
+const swipeConfig = {
+  delta: 50, // Seuil minimal de swipe en pixels
+  preventDefaultTouchmoveEvent: false, // Pour ne pas bloquer le défilement vertical
+  trackTouch: true, // Suivre les événements tactiles
+  trackMouse: false, // Ne pas suivre les événements de souris
+  rotationAngle: 0, // Angle de rotation (0 pour aucune rotation)
+};
 
 function App() {
   const [activePage, setActivePage] = useState('home');
   const [isLandscape, setIsLandscape] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
   
-  // Version simplifiée pour détecter uniquement l'orientation
+  // Gestion de l'orientation
   useEffect(() => {
     const checkOrientation = () => {
       setIsLandscape(window.innerWidth > window.innerHeight);
@@ -35,16 +47,44 @@ function App() {
     };
   }, []);
   
-  // Suppression de la logique d'échelle qui peut causer des problèmes
+  // Mise à jour de l'onglet actif en fonction de l'URL
+  useEffect(() => {
+    const path = location.pathname.split('/')[1] || 'home';
+    setActivePage(path);
+  }, [location.pathname]);
+  
+  // Configuration du gestionnaire de swipe
+  const handlers = useSwipeable({
+    onSwipedLeft: () => handleSwipe('left'),
+    onSwipedRight: () => handleSwipe('right'),
+    ...swipeConfig
+  });
+  
+  // Gestionnaire de swipe pour la navigation
+  const handleSwipe = (direction) => {
+    const routes = ['', 'recipes', 'shop', 'map', 'podium', 'planning', 'profile', 'favorites'];
+    const currentIndex = routes.indexOf(activePage === 'home' ? '' : activePage);
+    
+    if (currentIndex !== -1) {
+      if (direction === 'left' && currentIndex < routes.length - 1) {
+        const nextRoute = routes[currentIndex + 1];
+        navigate(`/${nextRoute}`);
+        setActivePage(nextRoute || 'home');
+      } else if (direction === 'right' && currentIndex > 0) {
+        const prevRoute = routes[currentIndex - 1];
+        navigate(`/${prevRoute}`);
+        setActivePage(prevRoute || 'home');
+      }
+    }
+  };
+  
   return (
-    // Structure complètement revue pour garantir le défilement
-    <div className="app-outer-container">
+    <div className="app-outer-container" {...handlers}>
       <ThemeProvider>
         <ToastProvider>
           <CartProvider>
             <FavoritesProvider>
-              {/* Conteneur principal avec débordement visible */}
-              <div className="main-scroll-container">
+              <div className="main-scroll-container swipeable-element">
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/recipes" element={<RecipesPage />} />
@@ -57,7 +97,6 @@ function App() {
                 </Routes>
               </div>
               
-              {/* Navigation fixe en bas */}
               <footer className="nav-footer">
                 <BottomNavigation active={activePage} setActive={setActivePage} />
               </footer>

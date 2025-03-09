@@ -11,6 +11,7 @@ html, body, #root {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  touch-action: pan-x pan-y;
 }
 
 body {
@@ -51,6 +52,10 @@ body {
   overflow-y: visible;
   padding-bottom: 1rem;
   padding-top: 0.5rem;
+  /* Activer les gestes de swipe */
+  touch-action: pan-x pan-y;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* Classe spécifique pour le contenu défilable */
@@ -220,4 +225,17 @@ img {
 .page-component {
   padding: 0.5rem;
   margin-bottom: 1rem;
+}
+
+/* Support des gestes tactiles */
+.swipe-container {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  touch-action: pan-x pan-y;
+}
+
+.swipe-item {
+  width: 100%;
+  transition: transform 0.3s ease;
 }

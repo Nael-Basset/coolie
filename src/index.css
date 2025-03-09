@@ -33,6 +33,8 @@ body {
     touch-action: auto;
     /* Meilleure gestion du scroll */
     scroll-behavior: smooth;
+    /* Activer tous les gestes tactiles */
+    touch-action: manipulation;
   }
   
   body {
@@ -48,6 +50,8 @@ body {
     overflow-y: auto;
     /* Taille de base fixe */
     font-size: 16px;
+    /* Activer les gestes de swipe */
+    touch-action: pan-x pan-y;
   }
 
   /* Définitions des titres */
@@ -513,4 +517,11 @@ input, button {
 /* Style pour les pages */
 .page {
   padding-bottom: 70px; /* Espace pour la barre de navigation */
+}
+
+/* Activer les swipes sur les éléments de contenu */
+.swipeable-element {
+  touch-action: pan-x pan-y;
+  -webkit-user-select: none;
+  user-select: none;
 }
