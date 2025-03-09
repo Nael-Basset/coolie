@@ -13,6 +13,9 @@
   width: 100%;
   max-width: 100vw; /* Utiliser toute la largeur disponible */
   font-size: 16px; /* Base font size */
+  /* Autoriser le défilement vertical */
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* Pour les composants qui ont besoin d'être en grille */
@@ -21,6 +24,8 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
   width: 100%;
+  /* Suppression des contraintes de hauteur qui empêchent le défilement */
+  height: auto;
 }
 
 /* Pour les composants qui ont besoin d'être en flexbox */
@@ -53,7 +58,8 @@
   
   /* Amélioration de l'échelle */
   .mobile-fixed-height {
-    height: calc(100vh - 70px); /* Hauteur fixe moins navigation */
+    height: auto;
+    min-height: calc(100vh - 70px);
   }
   
   /* Empêcher les textes trop grands */
@@ -96,7 +102,8 @@
   }
   
   .landscape-scroll {
-    max-height: calc(100vh - 60px);
+    max-height: none;
+    height: auto;
     overflow-y: auto;
   }
 }
@@ -108,6 +115,8 @@
   padding: 0;
   font-size: 1rem;
   transform-origin: top left;
+  height: auto;
+  overflow-y: auto;
 }
 
 /* Suppression des styles complexes qui pourraient causer des problèmes */
@@ -120,6 +129,14 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* S'assurer que les conteneurs de page permettent le défilement */
+.page-container {
+  height: auto;
+  min-height: 100%;
+  overflow-y: auto;
+  padding-bottom: 70px; /* Espace pour la navigation */
 }
 
 /* Styles pour les images */

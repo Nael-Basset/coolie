@@ -41,8 +41,9 @@ function App() {
         <ToastProvider>
           <CartProvider>
             <FavoritesProvider>
-              <div className={`flex flex-col h-screen ${isLandscape ? 'landscape-mode' : ''}`}>
-                <main className="flex-1 overflow-auto pb-16">
+              <div className="flex flex-col h-screen">
+                {/* Modification du conteneur principal pour permettre le défilement */}
+                <main className="flex-1 overflow-y-auto pb-16 page-content">
                   <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/recipes" element={<RecipesPage />} />
@@ -54,7 +55,10 @@ function App() {
                     <Route path="/favorites" element={<FavoritesPage />} />
                   </Routes>
                 </main>
-                <BottomNavigation active={activePage} setActive={setActivePage} />
+                {/* Position fixe pour la barre de navigation inférieure */}
+                <div className="fixed bottom-0 left-0 right-0 bg-white z-10">
+                  <BottomNavigation active={activePage} setActive={setActivePage} />
+                </div>
               </div>
             </FavoritesProvider>
           </CartProvider>

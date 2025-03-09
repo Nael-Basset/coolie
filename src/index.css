@@ -12,8 +12,12 @@
     /* Fix pour iOS */
     -webkit-text-size-adjust: 100%;
     height: 100%;
-    /* Empêcher le zoom sur certains navigateurs mobiles */
-    touch-action: manipulation;
+    /* Permettre le défilement */
+    overflow-y: auto;
+    /* Empêcher seulement le zoom, pas le défilement */
+    touch-action: pan-x pan-y;
+    /* Meilleure gestion du scroll */
+    scroll-behavior: smooth;
   }
   
   body {
@@ -21,70 +25,62 @@
     margin: 0;
     padding: 0;
     width: 100%;
-    height: 100%;
+    min-height: 100%;
+    /* Autoriser le défilement vertical */
     overflow-x: hidden;
+    overflow-y: auto;
     /* Taille de base fixe */
     font-size: 16px;
-    /* Désactiver le zoom sur le pinch */
-    touch-action: pan-x pan-y;
-    /* Fix temporaire pour le zoom non voulu */
-    -webkit-text-size-adjust: none;
   }
 
-  h1 {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  h2 {
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  h3 {
-    font-size: 1.125rem;
-    margin-bottom: 0.4rem;
-  }
-
+  /* Définitions des titres */
   h1, h2, h3, h4, h5, h6 {
     @apply font-header;
   }
 
-  /* Ajustement des tailles de texte pour meilleure lisibilité sur mobile */
   h1 {
-    font-size: 1.5rem; /* 24px sur base 16px */
+    font-size: 1.5rem; /* 24px */
+    margin-bottom: 0.5rem;
   }
   
   h2 {
-    font-size: 1.25rem; /* 20px sur base 16px */
+    font-size: 1.25rem; /* 20px */
+    margin-bottom: 0.5rem;
   }
   
   h3 {
-    font-size: 1.125rem; /* 18px sur base 16px */
+    font-size: 1.125rem; /* 18px */
+    margin-bottom: 0.4rem;
+  }
+  
+  /* Styles pour les images */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Styles de base pour le responsive design */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
 }
 
-/* Styles de base pour le responsive design */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
+/* Container racine optimisé pour mobile */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
+  /* Autoriser le défilement */
+  overflow-y: auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Composants personnalisés */
 @layer components {
-  /* Container racine optimisé pour mobile */
-  #root {
-    @apply min-h-screen flex flex-col w-full;
-    max-width: 100vw; /* Utilise toute la largeur disponible */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-
   /* Classes logo */
   .logo {
     @apply font-logo font-bold;
@@ -134,6 +130,11 @@ img {
   margin-left: auto;
 }
 
+/* Corrections pour l'accessibilité mobile */
+input, button {
+  @apply focus:outline-none no-tap-highlight;
+}
+
 /* Media queries pour différentes tailles d'écran */
 /* Pour les téléphones mobiles */
 @media (max-width: 576px) {
@@ -146,7 +147,7 @@ img {
   /* Optimisations pour petits écrans */
   .mobile-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Deux éléments par ligne par défaut sur mobile */
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;
   }
   
@@ -154,37 +155,6 @@ img {
     font-size: 0.875rem;
   }
 
-  /* Ajustements pour les petits écrans */
-  .btn-primary, .btn-secondary {
-    padding: 0.375rem 0.75rem; /* Boutons plus petits */
-    font-size: 0.875rem;
-  }
-  
-  .card {
-    padding: 0.5rem; /* Moins de padding pour les cartes */
-  }
-  
-  /* Réduire l'espacement vertical pour éviter le scroll excessif */
-  .mobile-compact-spacing > * + * {
-    margin-top: 0.5rem;
-  }
-
-  /* Réduire l'espace pour les petits écrans */
-  .container {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-  
-  .py-mobile {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-  }
-  
-  .px-mobile {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-  
   /* Adapter la taille des polices */
   body {
     font-size: 14px;
@@ -201,17 +171,31 @@ img {
   h3 {
     font-size: 1.1rem;
   }
-  
-  /* Optimisations pour grille mobile */
-  .mobile-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
+
+  /* Ajustements pour les petits écrans */
+  .btn-primary, .btn-secondary {
+    padding: 0.375rem 0.75rem; /* Boutons plus petits */
+    font-size: 0.875rem;
   }
   
-  /* Réduire les espacements */
-  .card, .btn-primary, .btn-secondary {
-    padding: 0.4rem 0.6rem;
+  .card {
+    padding: 0.5rem; /* Moins de padding pour les cartes */
+  }
+  
+  /* Réduire l'espacement vertical */
+  .mobile-compact-spacing > * + * {
+    margin-top: 0.5rem;
+  }
+  
+  /* Classes d'espacement */
+  .py-mobile {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  .px-mobile {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 }
 
@@ -232,7 +216,6 @@ img {
   .container {
     max-width: 720px;
   }
-  /* Ajoutez ici des styles spécifiques aux tablettes */
 }
 
 /* Pour les ordinateurs de bureau */
@@ -240,23 +223,12 @@ img {
   .container {
     max-width: 1140px;
   }
-  /* Ajoutez ici des styles spécifiques aux ordinateurs */
-}
-
-/* Corrections pour l'accessibilité mobile */
-input, button {
-  @apply focus:outline-none no-tap-highlight;
-}
-
-/* Meilleure gestion du scroll */
-html {
-  scroll-behavior: smooth;
 }
 
 /* Styles pour les cartes Leaflet */
 .leaflet-container {
   width: 100% !important;
-  height: 60vh !important; /* Hauteur fixe pour la carte */
+  height: 60vh !important;
   font-family: 'Roboto', sans-serif;
   z-index: 1;
 }
@@ -480,3 +452,11 @@ html {
 .fill-red-500 { fill: #ef4444; }
 .fill-purple-500 { fill: #a855f7; }
 .fill-orange-secondary { fill: #FFB300; }
+
+/* Styles spécifiques pour le contenu des pages */
+.page-content {
+  padding-bottom: 70px; /* Espace pour la barre de navigation inférieure */
+  height: auto;
+  min-height: 100%;
+  overflow-y: auto;
+}
