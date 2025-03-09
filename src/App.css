@@ -40,6 +40,8 @@ body {
 /* Structure principale revue */
 .app-outer-container {
   padding-bottom: 60px; /* Espace pour la navigation */
+  padding-top: 0; /* Suppression du padding supérieur */
+  margin-top: 0; /* Suppression de la marge supérieure */
   min-height: 100%;
   position: relative;
   width: 100%;
@@ -51,7 +53,8 @@ body {
   height: auto;
   overflow-y: visible;
   padding-bottom: 1rem;
-  padding-top: 0.5rem;
+  padding-top: 0; /* Suppression du padding supérieur */
+  margin-top: 0; /* Suppression de la marge supérieure */
   /* Activer les gestes de swipe */
   touch-action: pan-x pan-y;
   -webkit-user-select: none;
