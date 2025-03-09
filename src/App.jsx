@@ -18,29 +18,31 @@ function App() {
   const [activePage, setActivePage] = useState('home');
   
   return (
-    <ThemeProvider>
-      <ToastProvider>
-        <CartProvider>
-          <FavoritesProvider>
-            <div className="flex flex-col h-screen">
-              <main className="flex-1 overflow-auto pb-16">
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/recipes" element={<RecipesPage />} />
-                  <Route path="/shop" element={<ProductsPage />} />
-                  <Route path="/map" element={<RegionMapPage />} />
-                  <Route path="/podium" element={<PodiumPage />} />
-                  <Route path="/planning" element={<PlanningPage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
-                  <Route path="/favorites" element={<FavoritesPage />} />
-                </Routes>
-              </main>
-              <BottomNavigation active={activePage} setActive={setActivePage} />
-            </div>
-          </FavoritesProvider>
-        </CartProvider>
-      </ToastProvider>
-    </ThemeProvider>
+    <div className="app-container">
+      <ThemeProvider>
+        <ToastProvider>
+          <CartProvider>
+            <FavoritesProvider>
+              <div className="flex flex-col h-screen">
+                <main className="flex-1 overflow-auto pb-16">
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/recipes" element={<RecipesPage />} />
+                    <Route path="/shop" element={<ProductsPage />} />
+                    <Route path="/map" element={<RegionMapPage />} />
+                    <Route path="/podium" element={<PodiumPage />} />
+                    <Route path="/planning" element={<PlanningPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/favorites" element={<FavoritesPage />} />
+                  </Routes>
+                </main>
+                <BottomNavigation active={activePage} setActive={setActivePage} />
+              </div>
+            </FavoritesProvider>
+          </CartProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </div>
   );
 }
 

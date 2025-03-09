@@ -17,6 +17,23 @@
   }
 }
 
+/* Styles de base pour le responsive design */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 /* Composants personnalisés */
 @layer components {
   /* Container racine pour mobile-first */
@@ -63,6 +80,40 @@
   .no-tap-highlight {
     -webkit-tap-highlight-color: transparent;
   }
+}
+
+/* Classes d'utilitaires pour le responsive */
+.container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Media queries pour différentes tailles d'écran */
+/* Pour les téléphones mobiles */
+@media (max-width: 576px) {
+  .container {
+    max-width: 100%;
+  }
+  /* Ajoutez ici des styles spécifiques aux mobiles */
+}
+
+/* Pour les tablettes */
+@media (min-width: 577px) and (max-width: 992px) {
+  .container {
+    max-width: 720px;
+  }
+  /* Ajoutez ici des styles spécifiques aux tablettes */
+}
+
+/* Pour les ordinateurs de bureau */
+@media (min-width: 993px) {
+  .container {
+    max-width: 1140px;
+  }
+  /* Ajoutez ici des styles spécifiques aux ordinateurs */
 }
 
 /* Corrections pour l'accessibilité mobile */

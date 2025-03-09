@@ -1,0 +1,35 @@
+/* ...existing code... */
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Pour les composants qui ont besoin d'être en grille */
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+/* Pour les composants qui ont besoin d'être en flexbox */
+.flex-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Ajustements pour les appareils mobiles */
+@media (max-width: 576px) {
+  .grid-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .flex-layout {
+    flex-direction: column;
+  }
+}
+
+/* ...existing code... */
