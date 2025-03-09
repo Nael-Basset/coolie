@@ -7,6 +7,7 @@
   min-height: 100vh;
   width: 100%;
   max-width: 100vw; /* Utiliser toute la largeur disponible */
+  font-size: 16px; /* Base font size */
 }
 
 /* Pour les composants qui ont besoin d'être en grille */
@@ -43,6 +44,31 @@
     padding: 0.5rem;
     font-size: 0.9rem;
   }
+  
+  /* Amélioration de l'échelle */
+  .mobile-fixed-height {
+    height: calc(100vh - 70px); /* Hauteur fixe moins navigation */
+  }
+  
+  /* Empêcher les textes trop grands */
+  .text-overflow-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Meilleur dimensionnement des images */
+  .mobile-img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+  
+  /* Réduction de la taille des icônes */
+  .mobile-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 }
 
 /* Optimisations pour l'orientation paysage */
@@ -56,6 +82,15 @@
     max-height: calc(100vh - 80px);
     overflow-y: auto;
   }
+}
+
+/* Amélioration pour échelle mobile */
+.mobile-view {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-size: 1rem;
+  transform-origin: top left;
 }
 
 /* ...existing code... */
