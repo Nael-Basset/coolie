@@ -11,8 +11,7 @@ import PlanningPage from './pages/PlanningPage';
 import ProfilePage from './pages/ProfilePage';
 import FavoritesPage from './pages/FavoritesPage';
 import Cart from './components/Cart';
-import NavCart from './components/NavCart'; // Import du composant NavCart
-import AppHeader from './components/AppHeader'; // Nous allons créer ce composant
+import AppHeader from './components/AppHeader';
 import { ToastProvider } from './contexts/ToastContext';
 import { CartProvider } from './contexts/CartContext';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -85,14 +84,14 @@ function App() {
     <div className="app-outer-container" {...handlers}>
       <ThemeProvider>
         <ToastProvider>
+          {/* Déplacer CartProvider au niveau le plus haut possible */}
           <CartProvider>
             <FavoritesProvider>
-              {/* En-tête global avec logo et panier */}
-              <AppHeader />
-              
-              <div className="main-scroll-container swipeable-element mt-16"> {/* Ajout de marge pour l'en-tête */}
+              {/* Suppression de la marge mt-16 qui pourrait causer des problèmes */}
+              <div className="main-scroll-container swipeable-element">
+                <AppHeader />
                 <Routes>
-                  <Route path="/" element={<HomePage hideHeader={true} />} />
+                  <Route path="/" element={<HomePage />} />
                   <Route path="/recipes" element={<RecipesPage />} />
                   <Route path="/shop" element={<ProductsPage />} />
                   <Route path="/map" element={<RegionMapPage />} />
@@ -101,14 +100,14 @@ function App() {
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/favorites" element={<FavoritesPage />} />
                 </Routes>
+                
+                {/* Le panier intégré ici explicitement */}
+                <Cart />
+                
+                <footer className="nav-footer">
+                  <BottomNavigation active={activePage} setActive={setActivePage} />
+                </footer>
               </div>
-              
-              {/* Le panier */}
-              <Cart />
-              
-              <footer className="nav-footer">
-                <BottomNavigation active={activePage} setActive={setActivePage} />
-              </footer>
             </FavoritesProvider>
           </CartProvider>
         </ToastProvider>

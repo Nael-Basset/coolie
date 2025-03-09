@@ -1,274 +1,126 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { useToast } from './ToastContext';
+import React, { createContext, useState, useEffect } from 'react';
 
-// Simplification de la gestion des produits
-let products = [];
-try {
-  const mockData = require('../data/mockData');
-  products = mockData?.products || [];
-} catch (error) {
-  console.warn("Module mockData non trouvé");
-}
+// Simplification maximale du contexte
+export const CartContext = createContext({});
 
-export const CartContext = createContext({
-  cart: [],
-  addToCart: () => {},
-  removeFromCart: () => {},
-  clearCart: () => {},
-  getCartCount: () => 0,
-  calculateTotal: () => "0.00",
-  cartVisible: false,
-  showCart: () => {},
-  hideCart: () => {},
-  toggleCart: () => {}
-});
-
-export const useCart = () => useContext(CartContext);
-
-// Liste des points de retrait
-export const pickupLocations = [
-  { 
-    id: 'market-1', 
-    name: 'Marché Saint-Martin', 
-    address: '31 Rue du Château d\'Eau, 75010 Paris', 
-    hours: 'Mar-Sam: 8h-13h, 16h-19h' 
-  },
-  { 
-    id: 'market-2', 
-    name: 'Marché d\'Aligre', 
-    address: 'Place d\'Aligre, 75012 Paris', 
-    hours: 'Mar-Dim: 8h-13h30' 
-  },
-  { 
-    id: 'farm-1', 
-    name: 'Ferme de la Colline', 
-    address: '14 Chemin des Vergers, 91400 Saclay', 
-    hours: 'Mer, Ven: 15h-19h, Sam: 10h-18h' 
-  },
-  { 
-    id: 'farm-2', 
-    name: 'Ferme Bio du Vexin', 
-    address: '3 Route de Mantes, 95450 Sagy', 
-    hours: 'Ven: 16h-19h, Sam: 10h-17h' 
-  },
-  { 
-    id: 'shop-1', 
-    name: 'Coolie Shop - Bastille', 
-    address: '18 Rue de la Roquette, 75011 Paris', 
-    hours: 'Lun-Sam: 10h-20h' 
+export const useCart = () => {
+  const context = React.useContext(CartContext);
+  if (!context) {
+    console.warn("useCart must be used within CartProvider");
+    return {
+      cart: [],
+      addToCart: () => {},
+      removeFromCart: () => {},
+      getCartCount: () => 0,
+      showCart: () => {},
+      hideCart: () => {},
+      cartVisible: false
+    };
   }
-];
+  return context;
+};
 
 export const CartProvider = ({ children }) => {
+  // États basiques
   const [cart, setCart] = useState([]);
   const [cartVisible, setCartVisible] = useState(false);
-  const [selectedPickupLocation, setSelectedPickupLocation] = useState(null);
   
-  // Correction de l'accès à useToast
-  let showToast = () => {};
-  try {
-    const toastContext = useToast();
-    if (toastContext && typeof toastContext.showToast === 'function') {
-      showToast = toastContext.showToast;
-    }
-  } catch (error) {
-    console.warn("Toast context not available");
-  }
-
-  // Charger le panier depuis le stockage local au montage du composant
+  // Chargement du panier depuis localStorage
   useEffect(() => {
     try {
-      const savedCart = localStorage.getItem('cart');
-      if (savedCart) {
-        setCart(JSON.parse(savedCart));
-      }
-    } catch (error) {
-      console.error('Erreur lors du chargement du panier:', error);
-      // Réinitialiser le panier en cas d'erreur
-      setCart([]);
+      const storedCart = localStorage.getItem('cart');
+      if (storedCart) setCart(JSON.parse(storedCart));
+    } catch (e) {
+      console.error('Error loading cart:', e);
     }
   }, []);
   
-  // Sauvegarder le panier dans le stockage local à chaque modification
+  // Sauvegarde dans localStorage
   useEffect(() => {
     try {
       localStorage.setItem('cart', JSON.stringify(cart));
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde du panier:', error);
+    } catch (e) {
+      console.error('Error saving cart:', e);
     }
   }, [cart]);
   
-  // Ajouter un élément au panier
+  // Fonctions simplifiées
   const addToCart = (item) => {
-    if (!item || !item.name) {
-      console.error("Impossible d'ajouter un élément invalide au panier", item);
-      return;
-    }
+    if (!item?.name) return;
     
-    // Assurer que l'item a un ID
-    const itemWithId = {
+    const newItem = {
       ...item,
-      id: item.id || `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      id: item.id || `item-${Date.now()}`,
+      quantity: item.quantity || 1
     };
     
-    setCart(prevCart => {
-      // Vérifier si l'élément existe déjà
-      const existingItemIndex = prevCart.findIndex(
-        cartItem => cartItem.id === itemWithId.id || cartItem.name === itemWithId.name
-      );
-      
-      // Si l'élément existe déjà, augmenter sa quantité
-      if (existingItemIndex !== -1) {
-        const updatedCart = [...prevCart];
-        updatedCart[existingItemIndex] = {
-          ...updatedCart[existingItemIndex],
-          quantity: (parseFloat(updatedCart[existingItemIndex].quantity) || 0) + 
-                    (parseFloat(itemWithId.quantity) || 1)
-        };
-        return updatedCart;
-      } 
-      // Sinon, ajouter le nouvel élément
-      else {
-        return [...prevCart, { ...itemWithId, quantity: itemWithId.quantity || 1 }];
+    setCart(prev => {
+      const exists = prev.find(i => i.id === newItem.id || i.name === newItem.name);
+      if (exists) {
+        return prev.map(i => 
+          (i.id === exists.id || i.name === exists.name) 
+            ? { ...i, quantity: (i.quantity || 1) + (newItem.quantity || 1) } 
+            : i
+        );
       }
+      return [...prev, newItem];
     });
     
-    // Afficher automatiquement le panier lors de l'ajout d'un élément
+    // Automatiquement afficher le panier
     setCartVisible(true);
-    
-    // Message plus court - correction
-    try {
-      showToast(`${item.name} ajouté`, 'success');
-    } catch (error) {
-      console.warn("Couldn't show toast", error);
-    }
   };
-
-  const addIngredientsToCart = (ingredients) => {
-    if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
-      console.error("Liste d'ingrédients invalide", ingredients);
-      return;
-    }
-    
-    // Simplifier la conversion d'ingrédients
-    const ingredientProducts = ingredients.map((ingredient, index) => ({
-      id: `ingredient-${Date.now()}-${index}`,
-      name: typeof ingredient === 'string' ? ingredient : (ingredient.name || 'Ingrédient'),
-      price: 0,
-      quantity: 1,
-      isIngredient: true
-    }));
-    
-    // Ajouter tous les ingrédients
-    ingredientProducts.forEach(product => {
-      addToCart(product);
-    });
-    
-    if (showToast) {
-      showToast(`${ingredients.length} ingrédients ajoutés`, 'success');
-    }
-  };
-
+  
   const removeFromCart = (itemId) => {
     if (!itemId) return;
-    
-    setCart(prevCart => prevCart.filter(item => item.id !== itemId));
-    
-    if (showToast) {
-      showToast("Produit retiré", 'success');
-    }
+    setCart(prev => prev.filter(i => i.id !== itemId));
   };
-
-  const clearCart = () => {
-    setCart([]);
-    
-    if (showToast) {
-      showToast("Panier vidé", 'success');
-    }
-  };
-
+  
   const getCartCount = () => {
-    if (!cart || !Array.isArray(cart)) return 0;
-    return cart.reduce((count, item) => count + (item.quantity || 1), 0);
+    return cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
   };
-
+  
   const calculateTotal = () => {
-    if (!cart || !Array.isArray(cart)) return "0.00";
-    
     try {
-      return cart.reduce((total, item) => {
-        // Pour les prix avec format "1,50 € / Kg"
-        if (typeof item.price === 'string') {
-          // Extraire le montant numérique du prix
-          const priceMatch = item.price.replace(/,/g, '.').match(/\d+\.\d+|\d+/);
-          const numericPrice = priceMatch ? parseFloat(priceMatch[0]) : 0;
-          
-          return total + (numericPrice * (item.quantity || 1));
+      const total = cart.reduce((sum, item) => {
+        let price = 0;
+        if (typeof item.price === 'number') {
+          price = item.price;
+        } else if (typeof item.price === 'string') {
+          const match = item.price.replace(',', '.').match(/\d+(\.\d+)?/);
+          price = match ? parseFloat(match[0]) : 0;
         }
-        // Pour les prix numériques directs
-        return total + ((item.price || 0) * (item.quantity || 1));
-      }, 0).toFixed(2);
-    } catch (error) {
-      console.error("Erreur dans le calcul du total", error);
+        return sum + (price * (item.quantity || 1));
+      }, 0);
+      return total.toFixed(2);
+    } catch (e) {
       return "0.00";
     }
   };
   
-  const selectPickupLocation = (location) => {
-    setSelectedPickupLocation(location);
-    
-    if (showToast) {
-      showToast(`Point de retrait: ${location.name}`, 'success');
+  // Contrôle de visibilité
+  const showCart = () => setCartVisible(true);
+  const hideCart = () => setCartVisible(false);
+  
+  // Valeur de contexte simplifiée
+  const value = {
+    cart,
+    cartVisible,
+    addToCart,
+    removeFromCart,
+    getCartCount,
+    calculateTotal,
+    showCart,
+    hideCart,
+    updateQuantity: (id, qty) => {
+      if (qty <= 0) return removeFromCart(id);
+      setCart(prev => 
+        prev.map(item => item.id === id ? { ...item, quantity: qty } : item)
+      );
     }
   };
-
-  const updateQuantity = (itemId, newQuantity) => {
-    if (!itemId) return;
-    
-    if (newQuantity <= 0) {
-      removeFromCart(itemId);
-      return;
-    }
-    
-    setCart(prevCart => prevCart.map(item => 
-      item.id === itemId ? { ...item, quantity: newQuantity } : item
-    ));
-  };
-
-  // Fonctions pour contrôler la visibilité du panier - simplifiées et sécurisées
-  const showCart = () => {
-    console.log("showCart called");
-    setCartVisible(true);
-  };
   
-  const hideCart = () => {
-    console.log("hideCart called");
-    setCartVisible(false);
-  };
-  
-  const toggleCart = () => {
-    console.log("toggleCart called", cartVisible);
-    setCartVisible(prev => !prev);
-  };
-
   return (
-    <CartContext.Provider value={{ 
-      cart, 
-      addToCart, 
-      removeFromCart, 
-      clearCart, 
-      getCartCount,
-      addIngredientsToCart,
-      calculateTotal,
-      selectedPickupLocation,
-      selectPickupLocation,
-      pickupLocations,
-      updateQuantity,
-      cartVisible,
-      showCart,
-      hideCart,
-      toggleCart
-    }}>
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );

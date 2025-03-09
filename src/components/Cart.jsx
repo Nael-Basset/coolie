@@ -1,54 +1,53 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useCart } from '../contexts/CartContext';
 import { FaTimes, FaPlus, FaMinus } from 'react-icons/fa';
 
 const Cart = () => {
-  // Utilisation de useCart pour éviter les problèmes de contexte
-  const cartContext = useCart();
+  const { 
+    cart = [], 
+    cartVisible = false, 
+    hideCart, 
+    removeFromCart, 
+    updateQuantity, 
+    calculateTotal = () => "0.00" 
+  } = useCart();
   
-  // Protection contre les valeurs nulles
-  const cart = cartContext?.cart || [];
-  const cartVisible = cartContext?.cartVisible || false;
-  const removeFromCart = cartContext?.removeFromCart || (() => {});
-  const updateQuantity = cartContext?.updateQuantity || (() => {});
-  const calculateTotal = cartContext?.calculateTotal || (() => "0.00");
-  const hideCart = cartContext?.hideCart || (() => {});
-  
-  // Log pour le débogage
-  useEffect(() => {
-    console.log("Cart component rendered, visibility:", cartVisible);
-  }, [cartVisible]);
-  
-  // Si le panier n'est pas visible, ne rien afficher
+  // Ne rien rendre si le panier est invisible
   if (!cartVisible) return null;
-
+  
+  // Gestionnaire pour fermer le panier de manière sécurisée
   const handleClose = () => {
-    console.log("Cart: handleClose called");
-    if (typeof hideCart === 'function') {
-      hideCart();
-    }
+    if (typeof hideCart === 'function') hideCart();
   };
-
+  
   return (
-    <div className="cart-overlay fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-start pt-16">
-      <div className="cart-container bg-white w-full max-w-md rounded-lg shadow-lg overflow-hidden">
-        <div className="cart-header flex justify-between items-center p-4 bg-green-primary text-white">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-start pt-16"
+      onClick={handleClose} // Fermer en cliquant en dehors
+    >
+      <div 
+        className="bg-white w-full max-w-md rounded-lg shadow-lg overflow-hidden"
+        onClick={e => e.stopPropagation()} // Empêcher la fermeture en cliquant sur le contenu
+      >
+        <div className="flex justify-between items-center p-4 bg-green-primary text-white">
           <h3 className="text-xl font-semibold">Panier</h3>
           <button 
-            onClick={handleClose} 
+            onClick={handleClose}
             className="text-white p-2 hover:bg-green-600 rounded-full"
-            aria-label="Fermer"
           >
             <FaTimes />
           </button>
         </div>
         
-        <div className="cart-items p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+        <div className="p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
           {!cart || cart.length === 0 ? (
             <p className="text-center text-gray-500 py-6">Votre panier est vide</p>
           ) : (
             cart.map(item => (
-              <div key={item.id || `item-${Math.random()}`} className="cart-item flex justify-between items-center py-3 border-b">
+              <div 
+                key={item.id || `item-${Math.random()}`} 
+                className="flex justify-between items-center py-3 border-b"
+              >
                 <div className="flex-1 pr-2">
                   <h4 className="text-sm font-medium">{item.name || "Produit sans nom"}</h4>
                   <p className="text-sm text-gray-600">
@@ -59,22 +58,22 @@ const Cart = () => {
                 
                 <div className="flex items-center">
                   <button 
-                    onClick={() => updateQuantity(item.id, Math.max(0, (item.quantity || 1) - 1))}
+                    onClick={() => updateQuantity && updateQuantity(item.id, (item.quantity || 1) - 1)}
                     className="px-2 py-1 bg-gray-200 rounded-l"
-                    aria-label="Diminuer quantité"
+                    aria-label="Diminuer"
                   >
                     <FaMinus size={10} />
                   </button>
                   <span className="px-3 py-1 bg-gray-100">{item.quantity || 1}</span>
                   <button 
-                    onClick={() => updateQuantity(item.id, (item.quantity || 1) + 1)}
+                    onClick={() => updateQuantity && updateQuantity(item.id, (item.quantity || 1) + 1)}
                     className="px-2 py-1 bg-gray-200 rounded-r"
-                    aria-label="Augmenter quantité"
+                    aria-label="Augmenter"
                   >
                     <FaPlus size={10} />
                   </button>
                   <button 
-                    onClick={() => removeFromCart(item.id)} 
+                    onClick={() => removeFromCart && removeFromCart(item.id)}
                     className="ml-3 text-red-500 p-1"
                     aria-label="Supprimer"
                   >
@@ -87,7 +86,7 @@ const Cart = () => {
         </div>
         
         {cart && cart.length > 0 && (
-          <div className="cart-footer p-4 bg-gray-50">
+          <div className="p-4 bg-gray-50">
             <div className="flex justify-between items-center mb-4">
               <span className="font-semibold">Total:</span>
               <span className="font-bold text-xl">{calculateTotal()} €</span>
