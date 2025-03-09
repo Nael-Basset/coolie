@@ -1,8 +1,8 @@
-import { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useToast } from './ToastContext';
 import { products } from '../data/mockData';
 
-const CartContext = createContext();
+export const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
@@ -41,25 +41,58 @@ export const pickupLocations = [
 ];
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  const [cart, setCart] = useState([]);
   const [selectedPickupLocation, setSelectedPickupLocation] = useState(null);
   const { showToast } = useToast();
 
-  const addToCart = (product) => {
-    const existingItemIndex = cartItems.findIndex(item => item.id === product.id);
-    
-    if (existingItemIndex >= 0) {
-      // Product exists in cart, increase quantity
-      const updatedItems = [...cartItems];
-      updatedItems[existingItemIndex].quantity += 1;
-      setCartItems(updatedItems);
-    } else {
-      // Product is new to cart
-      setCartItems([...cartItems, { ...product, quantity: 1 }]);
+  // Charger le panier depuis le stockage local au montage du composant
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      try {
+        setCart(JSON.parse(savedCart));
+      } catch (error) {
+        console.error('Erreur lors du chargement du panier:', error);
+      }
+    }
+  }, []);
+  
+  // Sauvegarder le panier dans le stockage local à chaque modification
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
+  
+  // Ajouter un élément au panier
+  const addToCart = (item) => {
+    if (!item || !item.name) {
+      console.error("Impossible d'ajouter un élément invalide au panier", item);
+      return;
     }
     
+    setCart(prevCart => {
+      // Vérifier si l'élément existe déjà
+      const existingItemIndex = prevCart.findIndex(
+        cartItem => cartItem.id === item.id || cartItem.name === item.name
+      );
+      
+      // Si l'élément existe déjà, augmenter sa quantité
+      if (existingItemIndex !== -1) {
+        const updatedCart = [...prevCart];
+        updatedCart[existingItemIndex] = {
+          ...updatedCart[existingItemIndex],
+          quantity: (parseFloat(updatedCart[existingItemIndex].quantity) || 0) + 
+                    (parseFloat(item.quantity) || 1)
+        };
+        return updatedCart;
+      } 
+      // Sinon, ajouter le nouvel élément
+      else {
+        return [...prevCart, { ...item, quantity: item.quantity || 1 }];
+      }
+    });
+    
     // Message plus court
-    showToast(`${product.name} ajouté`, 'success');
+    showToast(`${item.name} ajouté`, 'success');
   };
 
   const addIngredientsToCart = (ingredients) => {
@@ -99,24 +132,23 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const removeFromCart = (productId) => {
-    const updatedItems = cartItems.filter(item => item.id !== productId);
-    setCartItems(updatedItems);
+  const removeFromCart = (itemId) => {
+    setCart(prevCart => prevCart.filter(item => item.id !== itemId));
     // Message plus court
     showToast("Produit retiré", 'success');
   };
 
   const clearCart = () => {
-    setCartItems([]);
+    setCart([]);
     showToast("Panier vidé", 'success');
   };
 
   const getCartCount = () => {
-    return cartItems.reduce((count, item) => count + item.quantity, 0);
+    return cart.reduce((count, item) => count + item.quantity, 0);
   };
 
   const calculateTotal = () => {
-    return cartItems.reduce((total, item) => {
+    return cart.reduce((total, item) => {
       // Pour les prix avec format "1,50 € / Kg"
       if (typeof item.price === 'string') {
         // Extraire le montant numérique du prix
@@ -137,9 +169,20 @@ export const CartProvider = ({ children }) => {
     showToast(`Point de retrait: ${location.name}`, 'success');
   };
 
+  const updateQuantity = (itemId, newQuantity) => {
+    if (newQuantity <= 0) {
+      removeFromCart(itemId);
+      return;
+    }
+    
+    setCart(prevCart => prevCart.map(item => 
+      item.id === itemId ? { ...item, quantity: newQuantity } : item
+    ));
+  };
+
   return (
     <CartContext.Provider value={{ 
-      cartItems, 
+      cart, 
       addToCart, 
       removeFromCart, 
       clearCart, 
@@ -148,7 +191,8 @@ export const CartProvider = ({ children }) => {
       calculateTotal,
       selectedPickupLocation,
       selectPickupLocation,
-      pickupLocations
+      pickupLocations,
+      updateQuantity
     }}>
       {children}
     </CartContext.Provider>
