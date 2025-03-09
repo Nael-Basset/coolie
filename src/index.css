@@ -8,23 +8,42 @@
 
 /* Styles de base */
 @layer base {
-  body {
-    @apply bg-background text-text-dark font-body;
-    min-height: 100vh;
-    min-height: -webkit-fill-available; /* Pour iOS */
-    width: 100%;
-    overflow-x: hidden;
-    margin: 0;
-    padding: 0;
-    /* Ajout de la taille de texte de base adaptée aux mobiles */
-    font-size: 16px; /* Taille standard qui fonctionne bien sur mobiles */
-  }
-
-  /* Pour corriger la hauteur sur iOS */
   html {
-    height: -webkit-fill-available;
+    /* Fix pour iOS */
+    -webkit-text-size-adjust: 100%;
+    height: 100%;
     /* Empêcher le zoom sur certains navigateurs mobiles */
     touch-action: manipulation;
+  }
+  
+  body {
+    @apply bg-background text-text-dark font-body;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    /* Taille de base fixe */
+    font-size: 16px;
+    /* Désactiver le zoom sur le pinch */
+    touch-action: pan-x pan-y;
+    /* Fix temporaire pour le zoom non voulu */
+    -webkit-text-size-adjust: none;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  h3 {
+    font-size: 1.125rem;
+    margin-bottom: 0.4rem;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -48,6 +67,8 @@
 /* Styles de base pour le responsive design */
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 img {
@@ -147,6 +168,51 @@ img {
   .mobile-compact-spacing > * + * {
     margin-top: 0.5rem;
   }
+
+  /* Réduire l'espace pour les petits écrans */
+  .container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  .py-mobile {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  .px-mobile {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  /* Adapter la taille des polices */
+  body {
+    font-size: 14px;
+  }
+  
+  h1 {
+    font-size: 1.4rem;
+  }
+  
+  h2 {
+    font-size: 1.2rem;
+  }
+  
+  h3 {
+    font-size: 1.1rem;
+  }
+  
+  /* Optimisations pour grille mobile */
+  .mobile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  
+  /* Réduire les espacements */
+  .card, .btn-primary, .btn-secondary {
+    padding: 0.4rem 0.6rem;
+  }
 }
 
 /* Pour les téléphones mobiles en orientation paysage */
@@ -189,9 +255,10 @@ html {
 
 /* Styles pour les cartes Leaflet */
 .leaflet-container {
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 60vh !important; /* Hauteur fixe pour la carte */
   font-family: 'Roboto', sans-serif;
+  z-index: 1;
 }
 
 .leaflet-popup-content-wrapper {

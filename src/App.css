@@ -1,4 +1,9 @@
-/* ...existing code... */
+/* Réinitialisation de base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 /* Structure principale de l'app */
 .app-container {
@@ -13,17 +18,17 @@
 /* Pour les composants qui ont besoin d'être en grille */
 .grid-layout {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Colonnes plus petites et adaptatives */
-  gap: 0.75rem;
-  padding: 0.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  width: 100%;
 }
 
 /* Pour les composants qui ont besoin d'être en flexbox */
 .flex-layout {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  padding: 0.5rem;
+  gap: 0.5rem;
+  width: 100%;
 }
 
 /* Layout pour cartes sur mobile */
@@ -36,8 +41,9 @@
 
 /* Ajustements pour les appareils mobiles */
 @media (max-width: 576px) {
-  .grid-layout {
-    grid-template-columns: repeat(2, 1fr); /* Deux colonnes fixes sur petits écrans */
+  .grid-layout, .flex-layout, .card-grid {
+    gap: 0.4rem;
+    padding: 0.3rem;
   }
   
   .card-compact {
@@ -69,6 +75,17 @@
     width: 1.25rem;
     height: 1.25rem;
   }
+  
+  /* Optimiser la taille des éléments */
+  .mobile-optimize {
+    font-size: 0.9rem;
+  }
+  
+  /* Meilleures proportions pour mobile */
+  .mobile-card {
+    aspect-ratio: auto;
+    height: auto;
+  }
 }
 
 /* Optimisations pour l'orientation paysage */
@@ -79,7 +96,7 @@
   }
   
   .landscape-scroll {
-    max-height: calc(100vh - 80px);
+    max-height: calc(100vh - 60px);
     overflow-y: auto;
   }
 }
@@ -93,4 +110,21 @@
   transform-origin: top left;
 }
 
-/* ...existing code... */
+/* Suppression des styles complexes qui pourraient causer des problèmes */
+.mobile-view {
+  width: 100%;
+}
+
+/* Utilitaires pratiques */
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Styles pour les images */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
