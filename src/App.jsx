@@ -10,7 +10,9 @@ import PodiumPage from './pages/PodiumPage';
 import PlanningPage from './pages/PlanningPage';
 import ProfilePage from './pages/ProfilePage';
 import FavoritesPage from './pages/FavoritesPage';
-import Cart from './components/Cart'; // Importer le composant Cart
+import Cart from './components/Cart';
+import NavCart from './components/NavCart'; // Import du composant NavCart
+import AppHeader from './components/AppHeader'; // Nous allons créer ce composant
 import { ToastProvider } from './contexts/ToastContext';
 import { CartProvider } from './contexts/CartContext';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -85,10 +87,12 @@ function App() {
         <ToastProvider>
           <CartProvider>
             <FavoritesProvider>
-              {/* Restauration de la structure originale */}
-              <div className="main-scroll-container swipeable-element">
+              {/* En-tête global avec logo et panier */}
+              <AppHeader />
+              
+              <div className="main-scroll-container swipeable-element mt-16"> {/* Ajout de marge pour l'en-tête */}
                 <Routes>
-                  <Route path="/" element={<HomePage />} />
+                  <Route path="/" element={<HomePage hideHeader={true} />} />
                   <Route path="/recipes" element={<RecipesPage />} />
                   <Route path="/shop" element={<ProductsPage />} />
                   <Route path="/map" element={<RegionMapPage />} />
