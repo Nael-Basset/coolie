@@ -7,6 +7,7 @@ import CartModal from '../components/CartModal';
 import GlobalSearch from '../components/GlobalSearch';
 import { useCart } from '../contexts/CartContext';
 import { useTheme } from '../contexts/ThemeContext';
+import NavCart from '../components/NavCart';
 
 const HomePage = () => {
   const { getCartCount } = useCart();
@@ -28,17 +29,7 @@ const HomePage = () => {
         </div>
         <div className="flex space-x-2">
           <GlobalSearch />
-          <button 
-            className="p-2 text-white relative"
-            onClick={() => setShowCart(true)}
-          >
-            <FaShoppingCart size={20} className="text-orange-secondary" />
-            {getCartCount() > 0 && (
-              <span className="absolute top-0 right-0 bg-orange-secondary text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                {getCartCount() > 9 ? '9+' : getCartCount()}
-              </span>
-            )}
-          </button>
+          <NavCart /> {/* Utilisation du composant NavCart existant */}
         </div>
       </header>
       
