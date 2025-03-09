@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import BottomNavigation from './components/BottomNavigation';
 import HomePage from './pages/HomePage';
@@ -16,6 +16,23 @@ import { FavoritesProvider } from './contexts/FavoritesContext';
 
 function App() {
   const [activePage, setActivePage] = useState('home');
+  const [isLandscape, setIsLandscape] = useState(false);
+  
+  // Détecter l'orientation du dispositif
+  useEffect(() => {
+    const checkOrientation = () => {
+      setIsLandscape(window.innerWidth > window.innerHeight);
+    };
+    
+    checkOrientation();
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', checkOrientation);
+    
+    return () => {
+      window.removeEventListener('resize', checkOrientation);
+      window.removeEventListener('orientationchange', checkOrientation);
+    };
+  }, []);
   
   return (
     <div className="app-container">
@@ -23,8 +40,8 @@ function App() {
         <ToastProvider>
           <CartProvider>
             <FavoritesProvider>
-              <div className="flex flex-col h-screen">
-                <main className="flex-1 overflow-auto pb-16">
+              <div className={`flex flex-col h-screen ${isLandscape ? 'landscape-mode' : ''}`}>
+                <main className={`flex-1 overflow-auto pb-16 ${isLandscape ? 'landscape-scroll' : ''}`}>
                   <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/recipes" element={<RecipesPage />} />

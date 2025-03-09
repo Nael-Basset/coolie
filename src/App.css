@@ -1,34 +1,60 @@
 /* ...existing code... */
 
+/* Structure principale de l'app */
 .app-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
+  max-width: 100vw; /* Utiliser toute la largeur disponible */
 }
 
 /* Pour les composants qui ont besoin d'être en grille */
 .grid-layout {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Colonnes plus petites et adaptatives */
+  gap: 0.75rem;
+  padding: 0.5rem;
 }
 
 /* Pour les composants qui ont besoin d'être en flexbox */
 .flex-layout {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.75rem;
+  padding: 0.5rem;
+}
+
+/* Layout pour cartes sur mobile */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Cartes plus petites */
+  gap: 0.75rem;
+  padding: 0.5rem;
 }
 
 /* Ajustements pour les appareils mobiles */
 @media (max-width: 576px) {
   .grid-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr); /* Deux colonnes fixes sur petits écrans */
   }
   
-  .flex-layout {
-    flex-direction: column;
+  .card-compact {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Optimisations pour l'orientation paysage */
+@media (orientation: landscape) {
+  .flex-layout, .grid-layout, .card-grid {
+    padding: 0.5rem 1rem;
+    gap: 1rem;
+  }
+  
+  .landscape-scroll {
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
   }
 }
 
