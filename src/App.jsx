@@ -41,9 +41,10 @@ function App() {
         <ToastProvider>
           <CartProvider>
             <FavoritesProvider>
-              <div className="flex flex-col h-screen">
-                {/* Modification du conteneur principal pour permettre le défilement */}
-                <main className="flex-1 overflow-y-auto pb-16 page-content">
+              {/* Suppression de la classe h-screen qui limite la hauteur */}
+              <div className="flex flex-col">
+                {/* Amélioration du conteneur principal pour permettre le défilement */}
+                <main className="flex-1 pb-16 scrollable-content">
                   <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/recipes" element={<RecipesPage />} />
@@ -56,7 +57,7 @@ function App() {
                   </Routes>
                 </main>
                 {/* Position fixe pour la barre de navigation inférieure */}
-                <div className="fixed bottom-0 left-0 right-0 bg-white z-10">
+                <div className="fixed bottom-0 left-0 right-0 bg-white z-10 nav-container">
                   <BottomNavigation active={activePage} setActive={setActivePage} />
                 </div>
               </div>

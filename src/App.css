@@ -9,13 +9,27 @@
 .app-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  /* Suppression de min-height pour permettre l'expansion */
   width: 100%;
-  max-width: 100vw; /* Utiliser toute la largeur disponible */
-  font-size: 16px; /* Base font size */
-  /* Autoriser le défilement vertical */
+  max-width: 100vw;
+  font-size: 16px;
+  /* Permettre le défilement */
   overflow-x: hidden;
+  overflow-y: visible; /* Changé de auto à visible */
+}
+
+/* Classe spécifique pour le contenu défilable */
+.scrollable-content {
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Défilement fluide sur iOS */
+  height: auto;
+  min-height: 100vh;
+  padding-bottom: 70px; /* Espace pour la navigation */
+}
+
+/* Conteneur pour la barre de navigation */
+.nav-container {
+  height: 60px; /* Hauteur fixe pour la barre de navigation */
 }
 
 /* Pour les composants qui ont besoin d'être en grille */
@@ -24,8 +38,7 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
   width: 100%;
-  /* Suppression des contraintes de hauteur qui empêchent le défilement */
-  height: auto;
+  height: auto; /* Permettre l'expansion */
 }
 
 /* Pour les composants qui ont besoin d'être en flexbox */
@@ -56,10 +69,10 @@
     font-size: 0.9rem;
   }
   
-  /* Amélioration de l'échelle */
+  /* Modification pour permettre le défilement */
   .mobile-fixed-height {
     height: auto;
-    min-height: calc(100vh - 70px);
+    min-height: auto;
   }
   
   /* Empêcher les textes trop grands */
@@ -134,8 +147,8 @@
 /* S'assurer que les conteneurs de page permettent le défilement */
 .page-container {
   height: auto;
-  min-height: 100%;
-  overflow-y: auto;
+  width: 100%;
+  overflow-y: visible; /* Changé de auto à visible */
   padding-bottom: 70px; /* Espace pour la navigation */
 }
 
