@@ -1,9 +1,18 @@
-import React, { useContext, useEffect } from 'react';
-import { CartContext } from '../contexts/CartContext';
+import React, { useEffect } from 'react';
+import { useCart } from '../contexts/CartContext';
 import { FaTimes, FaPlus, FaMinus } from 'react-icons/fa';
 
 const Cart = () => {
-  const { cart, removeFromCart, updateQuantity, calculateTotal, cartVisible, hideCart } = useContext(CartContext);
+  // Utilisation de useCart pour éviter les problèmes de contexte
+  const cartContext = useCart();
+  
+  // Protection contre les valeurs nulles
+  const cart = cartContext?.cart || [];
+  const cartVisible = cartContext?.cartVisible || false;
+  const removeFromCart = cartContext?.removeFromCart || (() => {});
+  const updateQuantity = cartContext?.updateQuantity || (() => {});
+  const calculateTotal = cartContext?.calculateTotal || (() => "0.00");
+  const hideCart = cartContext?.hideCart || (() => {});
   
   // Log pour le débogage
   useEffect(() => {
@@ -13,13 +22,20 @@ const Cart = () => {
   // Si le panier n'est pas visible, ne rien afficher
   if (!cartVisible) return null;
 
+  const handleClose = () => {
+    console.log("Cart: handleClose called");
+    if (typeof hideCart === 'function') {
+      hideCart();
+    }
+  };
+
   return (
     <div className="cart-overlay fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-start pt-16">
       <div className="cart-container bg-white w-full max-w-md rounded-lg shadow-lg overflow-hidden">
         <div className="cart-header flex justify-between items-center p-4 bg-green-primary text-white">
           <h3 className="text-xl font-semibold">Panier</h3>
           <button 
-            onClick={hideCart} 
+            onClick={handleClose} 
             className="text-white p-2 hover:bg-green-600 rounded-full"
             aria-label="Fermer"
           >
@@ -78,7 +94,7 @@ const Cart = () => {
             </div>
             <button 
               className="w-full py-3 bg-green-primary text-white rounded-md font-medium"
-              onClick={hideCart}
+              onClick={handleClose}
             >
               Passer au paiement
             </button>

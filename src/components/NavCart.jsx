@@ -1,17 +1,26 @@
-import React, { useContext } from 'react';
-import { CartContext } from '../contexts/CartContext';
+import React from 'react';
+import { useCart } from '../contexts/CartContext';
 import { FaShoppingCart } from 'react-icons/fa';
 
 const NavCart = () => {
-  const { getCartCount, showCart } = useContext(CartContext);
+  // Utilisation de useCart plutôt que useContext directement
+  const cartContext = useCart();
+  
+  // Protection contre les erreurs avec des valeurs par défaut
+  const getCartCount = cartContext?.getCartCount || (() => 0);
+  const showCart = cartContext?.showCart || (() => console.log("showCart not available"));
   
   // Récupération du nombre d'articles dans le panier
-  const count = getCartCount ? getCartCount() : 0;
+  const count = getCartCount();
   
   // Fonction pour ouvrir le panier lorsqu'on clique sur l'icône
-  const handleOpenCart = () => {
-    console.log("Ouverture du panier");
-    showCart();
+  const handleOpenCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("NavCart: handleOpenCart called");
+    if (typeof showCart === 'function') {
+      showCart();
+    }
   };
   
   return (

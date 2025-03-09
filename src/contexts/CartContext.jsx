@@ -1,16 +1,27 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useToast } from './ToastContext';
-// Vérifier si le module mockData existe, sinon créer des produits fictifs
+
+// Simplification de la gestion des produits
 let products = [];
 try {
-  const { products: mockProducts } = require('../data/mockData');
-  products = mockProducts || [];
+  const mockData = require('../data/mockData');
+  products = mockData?.products || [];
 } catch (error) {
-  console.warn("Module mockData non trouvé, utilisation d'un tableau vide");
-  products = [];
+  console.warn("Module mockData non trouvé");
 }
 
-export const CartContext = createContext();
+export const CartContext = createContext({
+  cart: [],
+  addToCart: () => {},
+  removeFromCart: () => {},
+  clearCart: () => {},
+  getCartCount: () => 0,
+  calculateTotal: () => "0.00",
+  cartVisible: false,
+  showCart: () => {},
+  hideCart: () => {},
+  toggleCart: () => {}
+});
 
 export const useCart = () => useContext(CartContext);
 
@@ -52,7 +63,17 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [cartVisible, setCartVisible] = useState(false);
   const [selectedPickupLocation, setSelectedPickupLocation] = useState(null);
-  const { showToast } = useToast ? useToast() : { showToast: () => {} };
+  
+  // Correction de l'accès à useToast
+  let showToast = () => {};
+  try {
+    const toastContext = useToast();
+    if (toastContext && typeof toastContext.showToast === 'function') {
+      showToast = toastContext.showToast;
+    }
+  } catch (error) {
+    console.warn("Toast context not available");
+  }
 
   // Charger le panier depuis le stockage local au montage du composant
   useEffect(() => {
@@ -115,9 +136,11 @@ export const CartProvider = ({ children }) => {
     // Afficher automatiquement le panier lors de l'ajout d'un élément
     setCartVisible(true);
     
-    // Message plus court
-    if (showToast) {
+    // Message plus court - correction
+    try {
       showToast(`${item.name} ajouté`, 'success');
+    } catch (error) {
+      console.warn("Couldn't show toast", error);
     }
   };
 
@@ -212,19 +235,19 @@ export const CartProvider = ({ children }) => {
     ));
   };
 
-  // Fonctions pour contrôler la visibilité du panier
+  // Fonctions pour contrôler la visibilité du panier - simplifiées et sécurisées
   const showCart = () => {
-    console.log("showCart called, setting visibility to true");
+    console.log("showCart called");
     setCartVisible(true);
   };
   
   const hideCart = () => {
-    console.log("hideCart called, setting visibility to false");
+    console.log("hideCart called");
     setCartVisible(false);
   };
   
   const toggleCart = () => {
-    console.log("toggleCart called, current visibility:", cartVisible);
+    console.log("toggleCart called", cartVisible);
     setCartVisible(prev => !prev);
   };
 
