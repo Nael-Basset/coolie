@@ -26,8 +26,8 @@ jobs:
           node-version: "18"
           cache: 'npm'
       - name: Install dependencies
-        # Modifié pour utiliser --legacy-peer-deps au cas où il y aurait d'autres problèmes de compatibilité
-        run: npm ci --legacy-peer-deps
+        # Utilisation de npm install à la place de npm ci pour générer un nouveau package-lock.json
+        run: npm install --no-audit
       - name: Fix crypto support
         run: |
           echo "export NODE_OPTIONS=--openssl-legacy-provider" >> $GITHUB_ENV
