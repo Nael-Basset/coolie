@@ -6,17 +6,31 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Reset CSS plus agressif pour garantir le défilement */
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+  position: relative;
+}
+
+html {
+  overflow-y: auto;
+}
+
+body {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Styles de base */
 @layer base {
   html {
     /* Fix pour iOS */
     -webkit-text-size-adjust: 100%;
-    height: auto;
-    min-height: 100%;
-    /* Permettre le défilement */
+    /* Permettre explicitement le défilement */
     overflow-y: auto;
-    /* Empêcher seulement le zoom, pas le défilement */
-    touch-action: pan-x pan-y;
+    /* Forcer le défilement standard */
+    touch-action: auto;
     /* Meilleure gestion du scroll */
     scroll-behavior: smooth;
   }
@@ -473,4 +487,30 @@ input, button {
 /* Assurer que les éléments de la page ne bloquent pas le défilement */
 .overflow-unset {
   overflow: unset !important;
+}
+
+/* Conteneur racine */
+#root {
+  min-height: 100%;
+  width: 100%;
+  overflow-y: visible;
+  display: block;
+}
+
+/* Assurer que le défilement fonctionne pour les sections de contenu */
+.content-section {
+  overflow-y: visible;
+  height: auto;
+}
+
+/* Nouveau style pour garantir le défilement */
+.page-wrapper {
+  min-height: 100%;
+  overflow-y: auto;
+  padding-bottom: 60px; /* Espace pour le menu */
+}
+
+/* Style pour les pages */
+.page {
+  padding-bottom: 70px; /* Espace pour la barre de navigation */
 }

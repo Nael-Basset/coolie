@@ -13,6 +13,7 @@ import { ToastProvider } from './contexts/ToastContext';
 import { CartProvider } from './contexts/CartContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { FavoritesProvider } from './contexts/FavoritesContext';
+import './App.css'; // Assurez-vous que le CSS est bien importé
 
 function App() {
   const [activePage, setActivePage] = useState('home');
@@ -36,31 +37,30 @@ function App() {
   
   // Suppression de la logique d'échelle qui peut causer des problèmes
   return (
-    <div className="app-container">
+    // Structure complètement revue pour garantir le défilement
+    <div className="app-outer-container">
       <ThemeProvider>
         <ToastProvider>
           <CartProvider>
             <FavoritesProvider>
-              {/* Suppression de la classe h-screen qui limite la hauteur */}
-              <div className="flex flex-col">
-                {/* Amélioration du conteneur principal pour permettre le défilement */}
-                <main className="flex-1 pb-16 scrollable-content">
-                  <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/recipes" element={<RecipesPage />} />
-                    <Route path="/shop" element={<ProductsPage />} />
-                    <Route path="/map" element={<RegionMapPage />} />
-                    <Route path="/podium" element={<PodiumPage />} />
-                    <Route path="/planning" element={<PlanningPage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
-                    <Route path="/favorites" element={<FavoritesPage />} />
-                  </Routes>
-                </main>
-                {/* Position fixe pour la barre de navigation inférieure */}
-                <div className="fixed bottom-0 left-0 right-0 bg-white z-10 nav-container">
-                  <BottomNavigation active={activePage} setActive={setActivePage} />
-                </div>
+              {/* Conteneur principal avec débordement visible */}
+              <div className="main-scroll-container">
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/recipes" element={<RecipesPage />} />
+                  <Route path="/shop" element={<ProductsPage />} />
+                  <Route path="/map" element={<RegionMapPage />} />
+                  <Route path="/podium" element={<PodiumPage />} />
+                  <Route path="/planning" element={<PlanningPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/favorites" element={<FavoritesPage />} />
+                </Routes>
               </div>
+              
+              {/* Navigation fixe en bas */}
+              <footer className="nav-footer">
+                <BottomNavigation active={activePage} setActive={setActivePage} />
+              </footer>
             </FavoritesProvider>
           </CartProvider>
         </ToastProvider>

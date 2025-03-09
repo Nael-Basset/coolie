@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <!-- Simplification du viewport pour une meilleure compatibilité -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- Viewport simplifié pour assurer le bon fonctionnement du défilement -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Quicksand:wght@500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -20,12 +20,7 @@
      crossorigin=""></script>
     
     <title>COOLIE App</title>
-    <!-- Ajout d'un script pour empêcher le zoom sur mobile -->
-    <script type="text/javascript">
-      document.addEventListener('touchmove', function(event) {
-        if (event.scale !== 1) { event.preventDefault(); }
-      }, { passive: false });
-    </script>
+    <!-- Suppression du script qui peut bloquer le défilement -->
   </head>
   <body>
     <div id="root"></div>
