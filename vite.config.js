@@ -7,6 +7,7 @@ export default defineConfig({
   server: {
     open: true,
     port: 3000,
-    host: '0.0.0.0', // This allows the server to be accessible from other devices on the same network
+    host: '0.0.0.0',
   },
+  base: '/coolie/', // Cette configuration semble correcte
 })
